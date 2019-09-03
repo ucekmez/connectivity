@@ -1,0 +1,62 @@
+version: '3.1'
+
+services:
+
+  connectivity-redis:
+    image: redis
+    container_name: "connectivity-redis"
+    restart: always
+    networks:
+      - connectivity-network
+    expose:
+      - 6379
+
+  connectivity-api:
+    image: connectivity-api
+    container_name: "connectivity-api"
+    restart: always
+    build:
+      context: ./api
+      dockerfile: Dockerfile.api
+    networks:
+      - connectivity-network
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://connectivity-redis
+    expose:
+      - ${APIPORT}
+    ports:
+      - ${APIPORT}:7778
+    volumes:
+      - ./static/:/api/static
+
+  connectivity-queue:
+    image: connectivity-queue
+    container_name: "connectivity-queue"
+    restart: always
+    build:
+      context: ./api
+      dockerfile: Dockerfile.queue
+    networks:
+      - connectivity-network
+    expose:
+      - 7779
+    volumes:
+      - ./static/:/api/static
+
+  connectivity-db:
+    image: mongo
+    container_name: "connectivity-db"
+    restart: always
+    networks:
+      - connectivity-network
+    expose:
+      - 27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: conn!Mongo123
+
+
+networks:
+  connectivity-network:

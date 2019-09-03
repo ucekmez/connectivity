@@ -1,0 +1,9 @@
+falcon_jsonify
+falcon_cors
+falcon
+requests
+gunicorn
+redis
+rq
+pymongo
+calmsize
