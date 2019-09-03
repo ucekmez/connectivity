@@ -110,7 +110,7 @@ class Encryption(object):
 
 
 
-class Decrypt(object):
+class Decryption(object):
     def on_post(self, req, resp):
         data     = req.json # expecting id and key
 
@@ -188,7 +188,7 @@ class MCL_Exchange(object):
 
 
 api.add_route(ENDPOINT.format('encrypt'), Encryption())
-api.add_route(ENDPOINT.format('decrypt'), Encryption())
+api.add_route(ENDPOINT.format('decrypt'), Decryption())
 api.add_route(ENDPOINT.format('check'), CheckRequest())
 api.add_route('/download/{id}', DownloadFile())
 api.add_route(ENDPOINT.format('register'), MCL_Onboard())

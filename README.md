@@ -39,12 +39,6 @@ scenario-1 for request: {"key": "samplepassword", "filename": "file4.iso"}
 scenario-2 for request: {"key": "samplepassword", "url": "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg"}
 ~~~~
 
-`POST /api/agentmanagement/v3/decrypt`
-Decrypts (previously encrypted) file by consuming given job ID
-~~~~
-example request: {"id": "ip1uplfmvfz519jb"}
-~~~~
-
 `POST /api/agentmanagement/v3/check`
 Returns job status for encryption by consuming given job ID
 ~~~~
