@@ -14,7 +14,7 @@ class Crypto():
         self.key       = self.generate_key(key) if key else Fernet.generate_key()
         self.algorithm = Fernet(self.key)
         self.cipher    = b''
-        self.filename  = ''
+        self.filepath  = ''
         self.password  = b''
         self.key       = b''
 
@@ -32,24 +32,21 @@ class Crypto():
         self.key = base64.urlsafe_b64encode(kdf.derive(self.password))
         return self.key
 
-    def encrypt(self, filename=None):
+    def encrypt(self, filepath=None):
         payload       = self.payload if type(self.payload) == bytes else bytes(self.payload, encoding='utf-8')
         self.cipher   = self.algorithm.encrypt(payload)
-        self.filename = filename
-        f             = open(self.filename, "wb")
+        self.filepath = filepath
+        f             = open(self.filepath, "wb")
         f.write(self.cipher)
         f.close()
-        return self.filename if self.filename else self.cipher
+        return self.filepath if self.filepath else self.cipher
 
-    def decrypt(self, filename=None, key=None):
-        if self.algorithm:
-            return self.algorithm.decrypt(self.cipher)
-        else:
-            self.cipher    = open(filename, "rb").read()
-            self.key       = key if type(key) == bytes else self.generate_key(key)
-            self.algorithm = Fernet(key)
-            self.payload   = self.algorithm.decrypt(self.cipher)
-            return self.payload
+    def decrypt(self, filepath=None, key=None):
+        self.cipher    = open(filepath, "rb").read()
+        self.key       = key if type(key) == bytes else self.generate_key(key)
+        self.algorithm = Fernet(self.key)
+        self.payload   = self.algorithm.decrypt(self.cipher)
+        return self.payload
 
 
 if __name__ == '__main__':

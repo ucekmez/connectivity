@@ -25,7 +25,7 @@ def generate_filename(payload):
     return filename
 
 
-@job('default', connection=Redis(host='connectivity-redis'))
+@job('encrypt', connection=Redis(host='connectivity-redis'))
 def download_encrypt_queue(is_remote, data, filename, record):
     enc_file    = ENCRYPTED_FOLDER + filename + ENC_FILE_EXTENSION
     COPY_FOLDER = STATIC_FOLDER if is_remote else LOCAL_FOLDER
@@ -59,20 +59,18 @@ def download_encrypt_queue(is_remote, data, filename, record):
 
 
 
-@job('default', connection=Redis(host='connectivity-redis'))
-def download_decrypt_queue(name, id, filepath, key):
+@job('decrypt', connection=Redis(host='connectivity-redis'))
+def decrypt_queue(name, id, filepath, key):
     cipher = cryptolib.Crypto() # empty cipher
 
-    FILES.update_one({ 'id': id }, {"$set": { "status": "decrypting", "url": "" }})
-    result = cipher.decrypt(filename=filepath, key=key)
-
+    result = cipher.decrypt(filepath=filepath, key=key)
     with open(STATIC_FOLDER + name, 'wb') as f:
         f.write(result)
-
     FILES.update_one({ 'id': id }, {"$set": { "status": "decrypted", "url": API_URL + id }})
 
     # remove encrypted file
-    os.remove(filepath)
+    #os.remove(filepath)
+
 
 
 
@@ -118,10 +116,10 @@ class Decryption(object):
         record = FILES.find_one({"id": data["id"]})
         filepath = record["location"]
 
-        job      = download_decrypt_queue.delay(name=record["filename"],
-                                                id=record["id"],
-                                                filepath=record["location"],
-                                                key=data["key"]).id
+        job      = decrypt_queue.delay(name=record["filename"],
+                                       id=data["id"],
+                                       filepath=record["location"],
+                                       key=data["key"]).id
         resp.json = { "id": data["id"] }
 
 

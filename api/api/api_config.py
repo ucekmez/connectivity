@@ -23,8 +23,10 @@ api = application = falcon.API(middleware=[
 
 api.req_options.auto_parse_form_urlencoded=True
 
+DEV                = True
+ADDRESS            = os.environ["DEV_ADDRESS"] if DEV else os.environ["PROD_ADDRESS"]
 ENDPOINT           = '/api/agentmanagement/v3/{}'
-API_URL            = "http://{}:{}/download/".format(os.environ['ADDRESS'], os.environ['APIPORT'])
+API_URL            = "{}:{}/download/".format(ADDRESS, os.environ["APIPORT"])
 STATIC_FOLDER      = "/api/static/"
 LOCAL_FOLDER       = STATIC_FOLDER + "local/"
 ENCRYPTED_FOLDER   = STATIC_FOLDER + "encrypted/"

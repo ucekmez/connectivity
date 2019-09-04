@@ -24,6 +24,9 @@ services:
       - .env
     environment:
       - REDIS_URL=redis://connectivity-redis
+      - DEV_ADDRESS=${DEV_ADDRESS}
+      - PROD_ADDRESS=${PROD_ADDRESS}
+      - APIPORT=${APIPORT}
     expose:
       - ${APIPORT}
     ports:
@@ -38,6 +41,11 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile.queue
+    environment:
+      - REDIS_URL=redis://connectivity-redis
+      - DEV_ADDRESS=${DEV_ADDRESS}
+      - PROD_ADDRESS=${PROD_ADDRESS}
+      - APIPORT=${APIPORT}
     networks:
       - connectivity-network
     expose:
