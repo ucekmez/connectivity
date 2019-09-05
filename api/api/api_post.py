@@ -63,10 +63,12 @@ def download_encrypt_queue(is_remote, data, filename, record):
 def decrypt_queue(name, id, filepath, key):
     cipher = cryptolib.Crypto() # empty cipher
 
+    FILES.update_one({ 'id': id }, {"$set": { "status": "decrypting" }})
     result = cipher.decrypt(filepath=filepath, key=key)
     with open(STATIC_FOLDER + name, 'wb') as f:
         f.write(result)
-    FILES.update_one({ 'id': id }, {"$set": { "status": "decrypted", "url": API_URL + id }})
+        FILES.update_one({ 'id': id }, {"$set": { "checksum": checksum(STATIC_FOLDER + name) }})
+    FILES.update_one({ 'id': id }, {"$set": { "status": "decrypted", "url": API_URL + id, "location": STATIC_FOLDER + name }})
 
     # remove encrypted file
     #os.remove(filepath)
